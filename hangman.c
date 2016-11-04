@@ -12,16 +12,19 @@ void read_file(char *word_buf)
 {
     char *path = getenv("HOME");
     char filename[32];
+    char *error;
     snprintf(filename, sizeof(filename), "%s/.words", path);
     char line[32];
-    FILE *word_list = fopen(path, "r");
+
+    FILE *word_list = fopen(filename, "r");
     
     if(!word_list){
         perror("File failed to open.");
         return;
     }
-    fgets(line, sizeof(line), word_list);
-    printf("wordbuf post file: %s\n", filename);
+    fgets(word_buf, 32, word_list);
+    word_buf[strlen(word_buf) - 1] = '\0';
+    printf("wordbuf post file: %s\n", word_buf);
     fclose(word_list);
 }
 
@@ -96,7 +99,7 @@ void collect_input(char *user_guess, char *all_guesses)
 int main(int argc, char *argv[])
 {
     int wrongs = 0;
-    char word_buf[128] = {"testing"};
+    char word_buf[128];
     char user_guess;
     char all_guesses[32] = {'\0'};
     
@@ -109,7 +112,7 @@ int main(int argc, char *argv[])
         }
         
     }
-    
+    printf("WB: %s\n", word_buf);
     int word_len = strlen(word_buf);
     
     printf("There are %d letters.\n", word_len);
