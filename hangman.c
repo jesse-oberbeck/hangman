@@ -13,6 +13,47 @@ void clear_buffer(void)
     while(getchar() != '\n');
 }
 
+void read_stats()
+{
+    char linecounter;
+    int lines = 0;
+    char line1[64];
+    char line2[64];
+    char line3[64];
+    char line4[64];
+    char filename[32];
+    char *path = getenv("HOME");
+    snprintf(filename, sizeof(filename), "%s/.hangman", path);
+
+    FILE *stats = fopen(filename, "ab+");
+    if(!stats){
+        perror("Stats file failed to open.");
+	exit(1);
+    }
+    while((linecounter = fgetc(stats)) != EOF){
+        if(linecounter == '\n'){
+            lines++;
+        }
+    }
+    fseek(stats, 0, SEEK_SET);
+    if(lines == 4){
+        fgets(line1, 64, stats);
+        line1[strlen(line1) - 1] = '\0';
+	printf("%s ", line1);
+        fgets(line2, 64, stats);
+        line2[strlen(line2) - 1] = '\0';
+	printf("%s ", line2);
+        fgets(line3, sizeof(line3), stats);
+        line3[strlen(line3) - 1] = '\0';
+	printf("%s ", line3);
+        fgets(line4, sizeof(line4), stats);
+        line4[strlen(line4) - 1] = '\0';
+	printf("%s\n", line4);
+    }else{
+        puts("No lines.");
+    }
+}
+
 void read_file(char *word_buf)
 {
     srand(time(NULL) + clock());
@@ -49,7 +90,6 @@ void read_file(char *word_buf)
     }
     
     word_buf[strlen(word_buf) - 1] = '\0';
-    printf("wordbuf post file: %s\n", word_buf);
     fclose(word_list);
 }
 
@@ -126,6 +166,8 @@ int main(int argc, char *argv[])
     char user_guess;
     char all_guesses[64] = {'\0'};
     
+    read_stats();
+
     if(argc == 2){
         strncpy(word_buf, argv[1], sizeof(word_buf));
     }else{
