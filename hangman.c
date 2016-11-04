@@ -13,6 +13,7 @@ void clear_buffer(void)
     while(getchar() != '\n');
 }
 
+
 void read_stats(char *line1, char *line2, char *line3, char *line4)
 {
     char linecounter;
@@ -22,7 +23,7 @@ void read_stats(char *line1, char *line2, char *line3, char *line4)
     char *path = getenv("HOME");
     snprintf(filename, sizeof(filename), "%s/.hangman", path);
 
-    FILE *stats = fopen(filename, "ab+");
+    FILE *stats = fopen(filename, "a+");
     if(!stats){
         perror("Stats file failed to open.");
 	exit(1);
@@ -34,20 +35,20 @@ void read_stats(char *line1, char *line2, char *line3, char *line4)
     }
     printf("NUMBER OF LINES: %d\n", lines);
     fseek(stats, 0, SEEK_SET);
-    if(lines == 4){
-        fgets(line1, sizeof(line1), stats);
+    if(lines > 2){
+        fgets(line1, 32, stats);
         line1[strlen(line1) - 1] = '\0';
-	printf("%s ", line1);
+	printf("BLARGENSNARGEL %s ", line1);
 
-        fgets(line2, sizeof(line2), stats);
+        fgets(line2, 32, stats);
         line2[strlen(line2) - 1] = '\0';
 	printf("%s ", line2);
 
-        fgets(line3, sizeof(line3), stats);
+        fgets(line3, 32, stats);
         line3[strlen(line3) - 1] = '\0';
 	printf("%s ", line3);
 
-        fgets(line4, sizeof(line4), stats);
+        fgets(line4, 32, stats);
         line4[strlen(line4) - 1] = '\0';
 	printf("%s\n", line4);
 
@@ -60,12 +61,8 @@ void read_stats(char *line1, char *line2, char *line3, char *line4)
     fclose(stats);
 }
 
-void write_stats(int *winlose, char *line1, char *line2, char *line3, char *line4)
+void write_stats(int *winlose, char *line1, char *line2, char *line3)
 {
-    //char *line1w;
-    //char *line2w;
-    //char *line3w;
-    //char *line4w;
     char filename[32];
     char *path = getenv("HOME");
 
@@ -79,42 +76,33 @@ void write_stats(int *winlose, char *line1, char *line2, char *line3, char *line
 
     fseek(stats, 0, SEEK_SET);
 
-    //printf("WINLOSE: %d\n", *winlose);
+    printf("WINLOSE: %d\n", *winlose);
 
-    //fgets(line1, sizeof(line1), stats);
     printf("LINE 1: %s\n", line1);
-    //line1[strlen(line1) - 1] = '\0';
     long int num1 = strtol(line1, NULL, 10);
     num1++;
+    printf("!!!Games: %li\n", num1);
     fprintf(stats, "%li Games\n", num1);
 
 
-    //fgets(line2, sizeof(line2), stats);
-    //line2[strlen(line2) - 1] = '\0';
     long int num2 = strtol(line2, NULL, 10);
     if(*winlose == 1){
+        puts("WIN +1");
         num2++;
+        printf("!!!Wins: %li\n", num2);
     }
     fprintf(stats, "%li Wins\n", num2);
 
-    //fgets(line3, sizeof(line3), stats);
-    //line3[strlen(line3) - 1] = '\0';
     long int num3 = strtol(line3, NULL, 10);
     if(*winlose == 0){
+        puts("LOSE +1");
         num3++;
+        printf("!!!Losses: %li\n", num3);
     }
-    fprintf(stats, "%li Losses\n", num3);
+    fprintf(stats, "%li Loss\n", num3);
 
-    //fgets(line4, sizeof(line4), stats);
-    //line4[strlen(line4) - 1] = '\0';
-    long int num4 = strtol(line4, NULL, 10);
-    num4 = (num2 + num3) / num1;
-    fprintf(stats, "%li Average", num4); 
-
-    //fputs("0 Games\n", stats);
-    //fputs("0 Wins\n", stats);
-    //fputs("0 Losses\n", stats);
-    //fputs("0 Average\n", stats);
+    double num4 = (num2 - num3) / (double)num1;
+    fprintf(stats, "%f Average\n", num4);
 
     fclose(stats);
 }
@@ -239,6 +227,10 @@ int main(int argc, char *argv[])
     int winlose = 0;
     
     read_stats(line1, line2, line3, line4);
+    printf("line 1 is %s\n", line1);
+    printf("line 2 is %s\n", line2);
+    printf("line 3 is %s\n", line3);
+    printf("line 4 is %s\n", line4);
 
     if(argc == 2){
         strncpy(word_buf, argv[1], sizeof(word_buf));
@@ -249,17 +241,14 @@ int main(int argc, char *argv[])
         }
         
     }
-    //printf("WB: %s\n", word_buf);
     int word_len = strlen(word_buf);
     
     while((wrongs < 6) && (winlose == 0)){
         winlose = print_puzzle(word_buf, all_guesses, word_len);
-        //printf("winlose: %d\n",winlose);
         if(!winlose){
             collect_input(&user_guess, all_guesses);
         }
         count_wrong(word_buf, all_guesses, word_len, &wrongs);
     }
-    //puts("You lose...");
-    write_stats(&winlose, line1, line2, line3, line4);
+    write_stats(&winlose, line1, line2, line3);
 }
