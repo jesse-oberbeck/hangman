@@ -37,18 +37,22 @@ void read_stats()
     }
     fseek(stats, 0, SEEK_SET);
     if(lines == 4){
-        fgets(line1, 64, stats);
+        fgets(line1, sizeof(line1), stats);
         line1[strlen(line1) - 1] = '\0';
 	printf("%s ", line1);
-        fgets(line2, 64, stats);
+
+        fgets(line2, sizeof(line2), stats);
         line2[strlen(line2) - 1] = '\0';
 	printf("%s ", line2);
+
         fgets(line3, sizeof(line3), stats);
         line3[strlen(line3) - 1] = '\0';
 	printf("%s ", line3);
+
         fgets(line4, sizeof(line4), stats);
         line4[strlen(line4) - 1] = '\0';
 	printf("%s\n", line4);
+
     }else{
         puts("No lines.");
     }
