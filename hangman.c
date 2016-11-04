@@ -32,6 +32,7 @@ void read_stats(char *line1, char *line2, char *line3, char *line4)
             lines++;
         }
     }
+    printf("NUMBER OF LINES: %d\n", lines);
     fseek(stats, 0, SEEK_SET);
     if(lines == 4){
         fgets(line1, sizeof(line1), stats);
@@ -61,15 +62,15 @@ void read_stats(char *line1, char *line2, char *line3, char *line4)
 
 void write_stats(int *winlose, char *line1, char *line2, char *line3, char *line4)
 {
-    char *line1w;
-    char *line2w;
-    char *line3w;
-    char *line4w;
+    //char *line1w;
+    //char *line2w;
+    //char *line3w;
+    //char *line4w;
     char filename[32];
     char *path = getenv("HOME");
 
     snprintf(filename, sizeof(filename), "%s/.hangman", path);
-    FILE *stats = fopen(filename, "ab+");
+    FILE *stats = fopen(filename, "w");
 
     if(!stats){
         perror("Stats file failed to open.");
@@ -78,29 +79,37 @@ void write_stats(int *winlose, char *line1, char *line2, char *line3, char *line
 
     fseek(stats, 0, SEEK_SET);
 
-    fgets(line1, sizeof(line1), stats);
+    //printf("WINLOSE: %d\n", *winlose);
+
+    //fgets(line1, sizeof(line1), stats);
     printf("LINE 1: %s\n", line1);
-    line1[strlen(line1) - 1] = '\0';
-    long int num1 = strtol(line1, &line1w, 10);
+    //line1[strlen(line1) - 1] = '\0';
+    long int num1 = strtol(line1, NULL, 10);
     num1++;
     fprintf(stats, "%li Games\n", num1);
 
 
-    fgets(line2, sizeof(line2), stats);
-    line2[strlen(line2) - 1] = '\0';
-    long int num2 = strtol(line2, &line2w, 10);
+    //fgets(line2, sizeof(line2), stats);
+    //line2[strlen(line2) - 1] = '\0';
+    long int num2 = strtol(line2, NULL, 10);
     if(*winlose == 1){
         num2++;
-        fprintf(stats, "%li Wins\n", num2);
     }
+    fprintf(stats, "%li Wins\n", num2);
 
-    fgets(line3, sizeof(line3), stats);
-    line3[strlen(line3) - 1] = '\0';
-    long int num3 = strtol(line3, &line3w, 10);
+    //fgets(line3, sizeof(line3), stats);
+    //line3[strlen(line3) - 1] = '\0';
+    long int num3 = strtol(line3, NULL, 10);
+    if(*winlose == 0){
+        num3++;
+    }
+    fprintf(stats, "%li Losses\n", num3);
 
-    fgets(line4, sizeof(line4), stats);
-    line4[strlen(line4) - 1] = '\0';
-    long int num4 = strtol(line4, &line4w, 10);
+    //fgets(line4, sizeof(line4), stats);
+    //line4[strlen(line4) - 1] = '\0';
+    long int num4 = strtol(line4, NULL, 10);
+    num4 = (num2 + num3) / num1;
+    fprintf(stats, "%li Average", num4); 
 
     //fputs("0 Games\n", stats);
     //fputs("0 Wins\n", stats);
