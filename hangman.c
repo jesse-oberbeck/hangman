@@ -7,8 +7,10 @@ void clear_buffer(void)
     while(getchar() != '\n');
 }
 
-void print_puzzle(char *word_buf, char *all_guesses, int word_len, int *prev_correct, int *wrong)
+
+void print_puzzle(char *word_buf, char *all_guesses, int word_len)
 {
+    int dash_count = 0;
     int printed = 0;
     int correct = 0;
     printf("allguess: %s\n", all_guesses);
@@ -23,61 +25,71 @@ void print_puzzle(char *word_buf, char *all_guesses, int word_len, int *prev_cor
         }
         if(!printed){
             printf("-");
+            dash_count++;
             printed = 0;
         }
         printed = 0;
     }
-    /*
-     if(*prev_correct == correct){
-        *wrong += 1;
+    if(dash_count == 0){
+        puts("\nYOU WIN!");
+        exit(0);
     }
-    */
-    //printf("correct: %d\n", correct);
-    int wrongs = (strlen(all_guesses) - correct);
-    if(wrongs == 6){
-        puts("you lose...");
-        exit();
-    }else{
-        printf("Wrong: %d\n", wrongs);
+}
+
+void count_wrong(char *word_buf, char *all_guesses, int word_len, int *wrongs)
+{
+    //int correct = 0;
+    int wrong = 0;
+    int flag = 0;
+    for(int i = 0; all_guesses[i] != '\0'; i++){
+        for(int i2 = 0; i2 < word_len; i2++){
+            if(word_buf[i2] == all_guesses[i]){
+                flag = 1;
+            }
+        }
+        if(flag != 1){
+            wrong++;
+        }
+        flag = 0;
+        
     }
-    puts("");
-    return;
+    int correct_guesses = strlen(all_guesses) - wrong;
+    *wrongs = strlen(all_guesses) - correct_guesses;
+    printf("guesses: %s\n", all_guesses);
 }
 
 ////////////////////////////////////////
 void collect_input(char *user_guess, char *all_guesses)
 {
-    puts("Guess a letter.");
+    puts("\n\nGuess a letter.");
     *user_guess = getchar();
     clear_buffer();
     int i = 0;
     while(all_guesses[i] != '\0'){
-        puts("comparing");
         if(*user_guess == all_guesses[i]){
             return;
         }
         i++;
     }
     all_guesses[i] = *user_guess;
-    //printf("In collect guess: %s\n", user_guess);
     return;
 }
 
 //////////////////////////////////////////
 int main(int argc, char *argv[])
 {
+    int wrongs = 0;
     char word_buf[128] = {"testing"};
     int word_len = strlen(word_buf);
     char user_guess;
     char all_guesses[32] = {'\0'};
-    int wrong = 0;
-    int correct = 0;
-    printf("%d\n", word_len);
-    while(1){
-        print_puzzle(&word_buf, &all_guesses, word_len, &correct, &wrong);
 
+    printf("%d\n", word_len);
+    while(wrongs < 6){
+        print_puzzle(word_buf, all_guesses, word_len);
         collect_input(&user_guess, all_guesses);
-        printf("guess in main: %c\n",user_guess);
-        //printf("wrong: %d\n", wrong);
+        count_wrong(word_buf, all_guesses, word_len, &wrongs);
+        printf("wrong: %d\n", wrongs);
     }
+    puts("You lose...");
 }
