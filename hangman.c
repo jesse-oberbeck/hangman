@@ -40,11 +40,9 @@ void read_file(char *word_buf)
     }
 
     int answer_num = (rand() % lines) + 1;
-    printf("random line: %d\n", answer_num);
 
     //Returns to top of file after line count.
     fseek(word_list, 0, SEEK_SET);
-    //printf("number of lines: %d\n", lines);
     while(answer_num != randomcompare){
         fgets(word_buf, MAX_WORD_SIZE, word_list);
         randomcompare++;
@@ -60,7 +58,6 @@ void print_puzzle(char *word_buf, char *all_guesses, int word_len)
     int dash_count = 0;
     int printed = 0;
     int correct = 0;
-    //printf("allguess: %s\n", all_guesses);
     for(int i = 0; i < word_len; i++){
         for(int i2 = 0; all_guesses[i2] != '\0'; i2++){
             if(word_buf[i] == all_guesses[i2]){
@@ -85,7 +82,6 @@ void print_puzzle(char *word_buf, char *all_guesses, int word_len)
 
 void count_wrong(char *word_buf, char *all_guesses, int word_len, int *wrongs)
 {
-    //int correct = 0;
     int wrong = 0;
     int flag = 0;
     for(int i = 0; all_guesses[i] != '\0'; i++){
@@ -142,12 +138,10 @@ int main(int argc, char *argv[])
     printf("WB: %s\n", word_buf);
     int word_len = strlen(word_buf);
     
-    //printf("There are %d letters.\n", word_len);
     while(wrongs < 6){
         print_puzzle(word_buf, all_guesses, word_len);
         collect_input(&user_guess, all_guesses);
         count_wrong(word_buf, all_guesses, word_len, &wrongs);
-        //printf("wrong: %d\n", wrongs);
     }
     puts("You lose...");
 }
