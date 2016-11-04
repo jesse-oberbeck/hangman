@@ -4,6 +4,10 @@
 #include <unistd.h>
 #include <time.h>
 
+enum{
+    MAX_WORD_SIZE = 36
+}; 
+
 void clear_buffer(void)
 {
     while(getchar() != '\n');
@@ -12,18 +16,16 @@ void clear_buffer(void)
 void read_file(char *word_buf)
 {
     srand(time(NULL) + clock());
-    //int answer_num = (rand() % 23);
-    int lines = 1;
+    int lines = 0;
     int randomcompare = 0;
     char linecounter;
     char *path = getenv("HOME");
     char filename[32];
-    char *error;
+
+    //Concatenates user home to file name.
     snprintf(filename, sizeof(filename), "%s/.words", path);
-    char line[32];
 
     FILE *word_list = fopen(filename, "r");
-    
     if(!word_list){
         perror("File failed to open.");
         return;
@@ -35,15 +37,16 @@ void read_file(char *word_buf)
         if(linecounter == '\n'){
             lines++;
         }
-        //printf("%c\n",linecounter);
-        linecounter = fgetc(word_list);
     }
+
     int answer_num = (rand() % lines) + 1;
     printf("random line: %d\n", answer_num);
+
+    //Returns to top of file after line count.
     fseek(word_list, 0, SEEK_SET);
-    printf("number of lines: %d\n", lines);
+    //printf("number of lines: %d\n", lines);
     while(answer_num != randomcompare){
-        fgets(word_buf, 32, word_list);
+        fgets(word_buf, MAX_WORD_SIZE, word_list);
         randomcompare++;
     }
     
@@ -125,7 +128,7 @@ int main(int argc, char *argv[])
     int wrongs = 0;
     char word_buf[128];
     char user_guess;
-    char all_guesses[32] = {'\0'};
+    char all_guesses[64] = {'\0'};
     
     if(argc == 2){
         strncpy(word_buf, argv[1], sizeof(word_buf));
@@ -139,7 +142,7 @@ int main(int argc, char *argv[])
     printf("WB: %s\n", word_buf);
     int word_len = strlen(word_buf);
     
-    printf("There are %d letters.\n", word_len);
+    //printf("There are %d letters.\n", word_len);
     while(wrongs < 6){
         print_puzzle(word_buf, all_guesses, word_len);
         collect_input(&user_guess, all_guesses);
