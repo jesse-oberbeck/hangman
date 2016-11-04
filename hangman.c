@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 
 void clear_buffer(void)
 {
@@ -10,6 +11,11 @@ void clear_buffer(void)
 
 void read_file(char *word_buf)
 {
+    srand(time(NULL) + clock());
+    //int answer_num = (rand() % 23);
+    int lines = 1;
+    int randomcompare = 0;
+    char linecounter;
     char *path = getenv("HOME");
     char filename[32];
     char *error;
@@ -22,7 +28,25 @@ void read_file(char *word_buf)
         perror("File failed to open.");
         return;
     }
-    fgets(word_buf, 32, word_list);
+
+    /*Counts number of lines via newline character.
+    init value is 1 to account for last line.*/
+    while((linecounter = fgetc(word_list)) != EOF){
+        if(linecounter == '\n'){
+            lines++;
+        }
+        //printf("%c\n",linecounter);
+        linecounter = fgetc(word_list);
+    }
+    int answer_num = (rand() % lines) + 1;
+    printf("random line: %d\n", answer_num);
+    fseek(word_list, 0, SEEK_SET);
+    printf("number of lines: %d\n", lines);
+    while(answer_num != randomcompare){
+        fgets(word_buf, 32, word_list);
+        randomcompare++;
+    }
+    
     word_buf[strlen(word_buf) - 1] = '\0';
     printf("wordbuf post file: %s\n", word_buf);
     fclose(word_list);
