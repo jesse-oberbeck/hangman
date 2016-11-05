@@ -102,7 +102,7 @@ void read_stats(char *line1, char *line2, char *line3, char *line4)
 
 /*Writes adjusted statistical values at the end
 of program's run.*/
-void write_stats(int *winlose, char *line1, char *line2, char *line3)
+void write_stats(int *winlose, char *line1, char *line2, char *line3, int *time_played)
 {
     char filename[32];
     char *path = getenv("HOME");
@@ -142,6 +142,8 @@ void write_stats(int *winlose, char *line1, char *line2, char *line3)
     double num4 = (num2 - num3) / (double)num1;
     fprintf(stats, "%f Average\n", num4);
     printf("%f Average\n", num4);
+
+    fprintf(stats, "%d seconds played previously.\n", *time_played);
 
     fclose(stats);
 }
@@ -285,6 +287,7 @@ int main(int argc, char *argv[])
     char line3[64];
     char line4[64];
     int winlose = 0;
+    int start_time = time(NULL);
     
     read_stats(line1, line2, line3, line4);
     printf("line 1 is %s\n", line1);
@@ -311,5 +314,7 @@ int main(int argc, char *argv[])
         count_wrong(word_buf, all_guesses, word_len, &wrongs);
         print_man(&wrongs);
     }
-    write_stats(&winlose, line1, line2, line3);
+    int time_played = time(NULL) - start_time;
+    printf("\nTime Played: %d seconds.", time_played);
+    write_stats(&winlose, line1, line2, line3, &time_played);
 }
