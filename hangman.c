@@ -11,6 +11,15 @@ enum{
     MAX_WORD_SIZE = 36
 }; 
 
+struct Lines{
+    char *line1;
+    char *line2;
+    char *line3;
+    char *line4;
+    char *line5;
+    char *line6;
+    char *line7;
+};
 
 /*Functions prototyped so main can be at the top 
 the way Liam wants it.*/
@@ -19,9 +28,9 @@ void clear_buffer(void);
 
 void print_man(int *wrongs);
 
-void read_stats(char *line1, char *line2, char *line3, char *line4, char *line5, char *line6, char *line7);
+void read_stats(struct Lines);
 
-void write_stats(int *winlose, char *line1, char *line2, char *line3, int *time_played, char *line6);
+void write_stats(int *winlose, int *time_played, struct Lines);
 
 void read_file(char *word_buf, char *arg);
 
@@ -49,13 +58,22 @@ int main(int argc, char *argv[])
     char line7[64];
     int winlose = 0;
     int start_time = time(NULL);
+    struct Lines lines;
+
+    lines.line1 = line1;
+    lines.line2 = line2;
+    lines.line3 = line3;
+    lines.line4 = line4;
+    lines.line5 = line5;
+    lines.line6 = line6;
+    lines.line7 = line7;
 
     //This is just here to get rid of argc unused warning.
     if(argc == 0){
         argc = 0;
     }
     
-    read_stats(line1, line2, line3, line4, line5, line6, line7);
+    read_stats(lines);
 
     if(access("~/.words", F_OK)){
         puts("File found.");
@@ -75,7 +93,7 @@ int main(int argc, char *argv[])
     }
     int time_played = time(NULL) - start_time;
     printf("\nTime Played: %d seconds.", time_played);
-    write_stats(&winlose, line1, line2, line3, &time_played, line6);
+    write_stats(&winlose, &time_played, lines);
 }
 
 
@@ -120,10 +138,10 @@ void print_man(int *wrongs)
 
 /*Reads statistics in from file, or if file is not found,
 makes the file and fills it with base values.*/
-void read_stats(char *line1, char *line2, char *line3, char *line4, char *line5, char *line6, char *line7)
+void read_stats(struct Lines lines)
 {
     char linecounter;
-    int lines = 0;
+    int linecount = 0;
     char filename[32];
     char *path = getenv("HOME");
     snprintf(filename, sizeof(filename), "%s/.hangman", path);
@@ -135,41 +153,41 @@ void read_stats(char *line1, char *line2, char *line3, char *line4, char *line5,
     }
     while((linecounter = fgetc(stats)) != EOF){
         if(linecounter == '\n'){
-            lines++;
+            linecount++;
         }
     }
 
     /*Prints values read in at the beginning
     of program's run.*/
     fseek(stats, 0, SEEK_SET);
-    if(lines > 2){
-        fgets(line1, 32, stats);
-        line1[strlen(line1) - 1] = '\0';
-	printf("%s ", line1);
+    if(linecount > 2){
+        fgets(lines.line1, 32, stats);
+        lines.line1[strlen(lines.line1) - 1] = '\0';
+	printf("%s ", lines.line1);
 
-        fgets(line2, 32, stats);
-        line2[strlen(line2) - 1] = '\0';
-	printf("%s ", line2);
+        fgets(lines.line2, 32, stats);
+        lines.line2[strlen(lines.line2) - 1] = '\0';
+	printf("%s ", lines.line2);
 
-        fgets(line3, 32, stats);
-        line3[strlen(line3) - 1] = '\0';
-	printf("%s ", line3);
+        fgets(lines.line3, 32, stats);
+        lines.line3[strlen(lines.line3) - 1] = '\0';
+	printf("%s ", lines.line3);
 
-        fgets(line4, 32, stats);
-        line4[strlen(line4) - 1] = '\0';
-	printf("%s\n", line4);
+        fgets(lines.line4, 32, stats);
+        lines.line4[strlen(lines.line4) - 1] = '\0';
+	printf("%s\n", lines.line4);
 
-        fgets(line5, 32, stats);
-        line5[strlen(line5) - 1] = '\0';
-	printf("%s\n", line5);
+        fgets(lines.line5, 32, stats);
+        lines.line5[strlen(lines.line5) - 1] = '\0';
+	printf("%s\n", lines.line5);
 
-        fgets(line6, 32, stats);
-        line6[strlen(line6) - 1] = '\0';
-	printf("%s\n", line6);
+        fgets(lines.line6, 32, stats);
+        lines.line6[strlen(lines.line6) - 1] = '\0';
+	printf("%s\n", lines.line6);
 
-        fgets(line7, 32, stats);
-        line6[strlen(line7) - 1] = '\0';
-	printf("%s\n", line7);
+        fgets(lines.line7, 32, stats);
+        lines.line6[strlen(lines.line7) - 1] = '\0';
+	printf("%s\n", lines.line7);
 
     /*Fills the stats file with default values
     if it was just made.*/
@@ -188,7 +206,7 @@ void read_stats(char *line1, char *line2, char *line3, char *line4, char *line5,
 
 /*Writes adjusted statistical values at the end
 of program's run.*/
-void write_stats(int *winlose, char *line1, char *line2, char *line3, int *time_played, char *line6)
+void write_stats(int *winlose, int *time_played, struct Lines lines)
 {
     char filename[32];
     char *path = getenv("HOME");
@@ -205,19 +223,19 @@ void write_stats(int *winlose, char *line1, char *line2, char *line3, int *time_
     fseek(stats, 0, SEEK_SET);
 
     //Adjust and print values to screen and file.
-    long int num1 = strtol(line1, NULL, 10);
+    long int num1 = strtol(lines.line1, NULL, 10);
     num1++;
     fprintf(stats, "%li Games\n", num1);
     printf("\nTotal games: %li\n", num1);
 
-    long int num2 = strtol(line2, NULL, 10);
+    long int num2 = strtol(lines.line2, NULL, 10);
     if(*winlose == 1){
         num2++;
     }
     fprintf(stats, "%li Wins\n", num2);
     printf("Number of wins: %li\n", num2);
 
-    long int num3 = strtol(line3, NULL, 10);
+    long int num3 = strtol(lines.line3, NULL, 10);
     if(*winlose == 0){
         num3++;
     }
@@ -231,7 +249,7 @@ void write_stats(int *winlose, char *line1, char *line2, char *line3, int *time_
     fprintf(stats, "%d Seconds played previously.\n", *time_played);
     printf("Seconds played this game: %d\n", *time_played);
 
-    double num5 = strtol(line6, NULL, 10);
+    double num5 = strtol(lines.line6, NULL, 10);
     double total_time = (double)num5 + (double)(*time_played);
     fprintf(stats, "%f Total time played\n", total_time);
     printf("Total time played: %f\n", total_time);
