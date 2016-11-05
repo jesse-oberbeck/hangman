@@ -22,6 +22,7 @@ int print_puzzle(char *word_buf, char *all_guesses, int word_len);
 void count_wrong(char *word_buf, char *all_guesses, int word_len, int *wrongs);
 void collect_input(char *user_guess, char *all_guesses);
 
+
 int main(int argc, char *argv[])
 {
     int wrongs = 0;
@@ -73,6 +74,7 @@ void clear_buffer(void)
     while(getchar() != '\n');
 }
 
+
 /*Builds a stick man based on number of wrong
 answers.*/
 void print_man(int *wrongs)
@@ -103,6 +105,7 @@ void print_man(int *wrongs)
             printf("%s%s%s", head, twoarms, twolegs);
     }
 }
+
 
 /*Reads statistics in from file, or if file is not found,
 makes the file and fills it with base values.*/
@@ -171,6 +174,7 @@ void read_stats(char *line1, char *line2, char *line3, char *line4, char *line5,
     fclose(stats);
 }
 
+
 /*Writes adjusted statistical values at the end
 of program's run.*/
 void write_stats(int *winlose, char *line1, char *line2, char *line3, int *time_played, char *line6)
@@ -194,7 +198,6 @@ void write_stats(int *winlose, char *line1, char *line2, char *line3, int *time_
     num1++;
     fprintf(stats, "%li Games\n", num1);
     printf("\nGames: %li\n", num1);
-
 
     long int num2 = strtol(line2, NULL, 10);
     if(*winlose == 1){
@@ -229,6 +232,7 @@ void write_stats(int *winlose, char *line1, char *line2, char *line3, int *time_
 
     fclose(stats);
 }
+
 
 /*Reads in answer list, setting the 
 goal word to a random word from the file.*/
@@ -274,6 +278,7 @@ void read_file(char *word_buf, char *arg)
     word_buf[strlen(word_buf) - 1] = '\0';
     fclose(word_list);
 }
+
 
 /*On each turn, prints correctly guessed letters, and
 lines where the letter has not yet been guessed.*/
@@ -321,6 +326,7 @@ int print_puzzle(char *word_buf, char *all_guesses, int word_len)
     }
 }
 
+
 /*Assesses the number of incorrect guesses*/
 void count_wrong(char *word_buf, char *all_guesses, int word_len, int *wrongs)
 {
@@ -342,6 +348,7 @@ void count_wrong(char *word_buf, char *all_guesses, int word_len, int *wrongs)
     *wrongs = strlen(all_guesses) - correct_guesses;
     printf("\nguesses: %s\n", all_guesses);
 }
+
 
 /*Takes guess from player. Takes ONLY the
 first character from entry.*/
