@@ -11,6 +11,62 @@ enum{
     MAX_WORD_SIZE = 36
 }; 
 
+/*Functions prototyped so main can be at the top 
+the way Liam wants it.*/
+void clear_buffer(void);
+void print_man(int *wrongs);
+void read_stats(char *line1, char *line2, char *line3, char *line4, char *line5, char *line6, char *line7);
+void write_stats(int *winlose, char *line1, char *line2, char *line3, int *time_played, char *line6);
+void read_file(char *word_buf, char *arg);
+int print_puzzle(char *word_buf, char *all_guesses, int word_len);
+void count_wrong(char *word_buf, char *all_guesses, int word_len, int *wrongs);
+void collect_input(char *user_guess, char *all_guesses);
+
+int main(int argc, char *argv[])
+{
+    int wrongs = 0;
+    char word_buf[128];
+    char user_guess;
+    char all_guesses[64] = {'\0'};
+    char line1[64];
+    char line2[64];
+    char line3[64];
+    char line4[64];
+    char line5[64];
+    char line6[64];
+    char line7[64];
+    int winlose = 0;
+    int start_time = time(NULL);
+
+    //This is just here to get rid of argc unused warning.
+    if(argc == 0){
+        argc = 0;
+    }
+    
+    read_stats(line1, line2, line3, line4, line5, line6, line7);
+
+    if(access("~/.words", F_OK)){
+        puts("File found.");
+        read_file(word_buf, argv[1]);
+    }
+        
+    //}
+    int word_len = strlen(word_buf);
+    
+    while((wrongs < 6) && (winlose == 0)){
+        winlose = print_puzzle(word_buf, all_guesses, word_len);
+        if(!winlose){
+            collect_input(&user_guess, all_guesses);
+        }
+        count_wrong(word_buf, all_guesses, word_len, &wrongs);
+        print_man(&wrongs);
+    }
+    int time_played = time(NULL) - start_time;
+    printf("\nTime Played: %d seconds.", time_played);
+    write_stats(&winlose, line1, line2, line3, &time_played, line6);
+}
+
+
 /*Clears the buffer, just like it says.*/
 void clear_buffer(void)
 {
@@ -185,7 +241,7 @@ void read_file(char *word_buf, char *arg)
     char *path = getenv("HOME");
     char filename[32];
 
-    //Concatenates user home to file name.
+    //Concatenates user home to file name. If present, uses arg as filename.
     if(arg != NULL){
         snprintf(filename, sizeof(filename), "%s/%s", path, arg);
     }else{
@@ -303,49 +359,4 @@ void collect_input(char *user_guess, char *all_guesses)
     }
     all_guesses[i] = *user_guess;
     return;
-}
-
-//////////////////////////////////////////
-int main(int argc, char *argv[])
-{
-    int wrongs = 0;
-    char word_buf[128];
-    char user_guess;
-    char all_guesses[64] = {'\0'};
-    char line1[64];
-    char line2[64];
-    char line3[64];
-    char line4[64];
-    char line5[64];
-    char line6[64];
-    char line7[64];
-    int winlose = 0;
-    int start_time = time(NULL);
-
-    //This is just here to get rid of argc unused warning.
-    if(argc == 0){
-        argc = 0;
-    }
-    
-    read_stats(line1, line2, line3, line4, line5, line6, line7);
-
-    if(access("~/.words", F_OK)){
-        puts("File found.");
-        read_file(word_buf, argv[1]);
-    }
-        
-    //}
-    int word_len = strlen(word_buf);
-    
-    while((wrongs < 6) && (winlose == 0)){
-        winlose = print_puzzle(word_buf, all_guesses, word_len);
-        if(!winlose){
-            collect_input(&user_guess, all_guesses);
-        }
-        count_wrong(word_buf, all_guesses, word_len, &wrongs);
-        print_man(&wrongs);
-    }
-    int time_played = time(NULL) - start_time;
-    printf("\nTime Played: %d seconds.", time_played);
-    write_stats(&winlose, line1, line2, line3, &time_played, line6);
 }
