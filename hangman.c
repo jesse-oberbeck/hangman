@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+#include <ctype.h>
 
 /*Defines size which allows for
 supercalifragilisticexpialidocious*/
@@ -194,10 +195,22 @@ int print_puzzle(char *word_buf, char *all_guesses, int word_len)
     int printed = 0;
     int correct = 0;
 
+    //On first run, prints lines and punctuation.
+    if(all_guesses[0] == '\0'){
+        for(int i = 0; i < word_len; i++){
+            if(isalpha(word_buf[i]) == 0){
+                printf("%c", word_buf[i]);
+            }else{
+                printf("_");
+            }
+        }
+    return(0);
+    }
+
     //Handle letters.
     for(int i = 0; i < word_len; i++){
         for(int i2 = 0; all_guesses[i2] != '\0'; i2++){
-            if(word_buf[i] == all_guesses[i2]){
+            if((word_buf[i] == all_guesses[i2]) || (isalpha(word_buf[i]) == 0)){
                 printf("%c", word_buf[i]);
                 printed = 1;
                 correct++;
