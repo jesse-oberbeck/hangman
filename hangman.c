@@ -13,6 +13,34 @@ void clear_buffer(void)
     while(getchar() != '\n');
 }
 
+void print_man(int *wrongs)
+{
+    const char *head = "  0\n";
+    const char *body = "  |  \n";
+    const char *onearm = " /|  \n";
+    const char *twoarms = " /|\\ \n";
+    const char *oneleg = " /\n";
+    const char *twolegs = " / \\\n";
+    switch(*wrongs){
+        case 1:
+            printf("%s", head);
+            break;
+        case 2:
+            printf("%s%s", head, body);
+            break;
+        case 3:
+            printf("%s%s", head, onearm);
+            break;
+        case 4:
+            printf("%s%s", head, twoarms);
+            break;
+        case 5:
+            printf("%s%s%s", head, twoarms, oneleg);
+            break;
+        case 6:
+            printf("%s%s%s", head, twoarms, twolegs);
+    }
+}
 
 void read_stats(char *line1, char *line2, char *line3, char *line4)
 {
@@ -249,6 +277,7 @@ int main(int argc, char *argv[])
             collect_input(&user_guess, all_guesses);
         }
         count_wrong(word_buf, all_guesses, word_len, &wrongs);
+        print_man(&wrongs);
     }
     write_stats(&winlose, line1, line2, line3);
 }
