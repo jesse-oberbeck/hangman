@@ -50,7 +50,7 @@ void print_man(int *wrongs)
 
 /*Reads statistics in from file, or if file is not found,
 makes the file and fills it with base values.*/
-void read_stats(char *line1, char *line2, char *line3, char *line4)
+void read_stats(char *line1, char *line2, char *line3, char *line4, char *line5, char *line6, char *line7)
 {
     char linecounter;
     int lines = 0;
@@ -89,6 +89,18 @@ void read_stats(char *line1, char *line2, char *line3, char *line4)
         line4[strlen(line4) - 1] = '\0';
 	printf("%s\n", line4);
 
+        fgets(line5, 32, stats);
+        line5[strlen(line5) - 1] = '\0';
+	printf("%s\n", line5);
+
+        fgets(line6, 32, stats);
+        line6[strlen(line6) - 1] = '\0';
+	printf("%s\n", line6);
+
+        fgets(line7, 32, stats);
+        line6[strlen(line7) - 1] = '\0';
+	printf("%s\n", line7);
+
     /*Fills the stats file with default values
     if it was just made.*/
     }else{
@@ -96,13 +108,16 @@ void read_stats(char *line1, char *line2, char *line3, char *line4)
         fputs("0 Wins\n", stats);
         fputs("0 Losses\n", stats);
         fputs("0 Average\n", stats);
+        fputs("0 seconds played previously.\n", stats);
+        fputs("0 seconds total.", stats);
+        fputs("0 seconds average.", stats);
     }
     fclose(stats);
 }
 
 /*Writes adjusted statistical values at the end
 of program's run.*/
-void write_stats(int *winlose, char *line1, char *line2, char *line3, int *time_played)
+void write_stats(int *winlose, char *line1, char *line2, char *line3, int *time_played, char *line6)
 {
     char filename[32];
     char *path = getenv("HOME");
@@ -144,13 +159,24 @@ void write_stats(int *winlose, char *line1, char *line2, char *line3, int *time_
     printf("%f Average\n", num4);
 
     fprintf(stats, "%d seconds played previously.\n", *time_played);
+    printf("%d seconds played this game.\n", *time_played);
+
+    double num5 = strtol(line6, NULL, 10);
+    double total_time = (double)num5 + (double)(*time_played);
+    fprintf(stats, "%f total time played\n", total_time);
+    printf("%f total time played.\n", total_time);
+
+    double avg_time = (double)num5 / (double)num1;
+    fprintf(stats, "%f average time played\n", avg_time);
+    printf("%f average time played.\n", avg_time);
+
 
     fclose(stats);
 }
 
 /*Reads in answer list, setting the 
 goal word to a random word from the file.*/
-void read_file(char *word_buf)
+void read_file(char *word_buf, char *arg)
 {
     srand(time(NULL) + clock());
     int lines = 0;
@@ -160,7 +186,11 @@ void read_file(char *word_buf)
     char filename[32];
 
     //Concatenates user home to file name.
-    snprintf(filename, sizeof(filename), "%s/.words", path);
+    if(arg != NULL){
+        snprintf(filename, sizeof(filename), "%s/%s", path, arg);
+    }else{
+        snprintf(filename, sizeof(filename), "%s/.words", path);
+    }
 
     FILE *word_list = fopen(filename, "r");
     if(!word_list){
@@ -286,24 +316,25 @@ int main(int argc, char *argv[])
     char line2[64];
     char line3[64];
     char line4[64];
+    char line5[64];
+    char line6[64];
+    char line7[64];
     int winlose = 0;
     int start_time = time(NULL);
-    
-    read_stats(line1, line2, line3, line4);
-    printf("line 1 is %s\n", line1);
-    printf("line 2 is %s\n", line2);
-    printf("line 3 is %s\n", line3);
-    printf("line 4 is %s\n", line4);
 
-    if(argc == 2){
-        strncpy(word_buf, argv[1], sizeof(word_buf));
-    }else{
-        if(access("~/.words", F_OK)){
-            puts("File found.");
-            read_file(word_buf);
-        }
-        
+    //This is just here to get rid of argc unused warning.
+    if(argc == 0){
+        argc = 0;
     }
+    
+    read_stats(line1, line2, line3, line4, line5, line6, line7);
+
+    if(access("~/.words", F_OK)){
+        puts("File found.");
+        read_file(word_buf, argv[1]);
+    }
+        
+    //}
     int word_len = strlen(word_buf);
     
     while((wrongs < 6) && (winlose == 0)){
@@ -316,5 +347,5 @@ int main(int argc, char *argv[])
     }
     int time_played = time(NULL) - start_time;
     printf("\nTime Played: %d seconds.", time_played);
-    write_stats(&winlose, line1, line2, line3, &time_played);
+    write_stats(&winlose, line1, line2, line3, &time_played, line6);
 }
