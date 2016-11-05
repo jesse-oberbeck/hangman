@@ -11,15 +11,24 @@ enum{
     MAX_WORD_SIZE = 36
 }; 
 
+
 /*Functions prototyped so main can be at the top 
 the way Liam wants it.*/
+
 void clear_buffer(void);
+
 void print_man(int *wrongs);
+
 void read_stats(char *line1, char *line2, char *line3, char *line4, char *line5, char *line6, char *line7);
+
 void write_stats(int *winlose, char *line1, char *line2, char *line3, int *time_played, char *line6);
+
 void read_file(char *word_buf, char *arg);
+
 int print_puzzle(char *word_buf, char *all_guesses, int word_len);
+
 void count_wrong(char *word_buf, char *all_guesses, int word_len, int *wrongs);
+
 void collect_input(char *user_guess, char *all_guesses);
 
 
