@@ -32,6 +32,8 @@ void count_wrong(char *word_buf, char *all_guesses, int word_len, int *wrongs);
 void collect_input(char *user_guess, char *all_guesses);
 
 
+
+
 int main(int argc, char *argv[])
 {
     int wrongs = 0;
