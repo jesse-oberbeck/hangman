@@ -76,11 +76,9 @@ int main(int argc, char *argv[])
     read_stats(lines);
 
     if(access("~/.words", F_OK)){
-        puts("File found.");
         read_file(word_buf, argv[1]);
     }
         
-    //}
     int word_len = strlen(word_buf);
     
     while((wrongs < 6) && (winlose == 0)){
@@ -148,7 +146,8 @@ void read_stats(struct Lines lines)
 
     FILE *stats = fopen(filename, "a+");
     if(!stats){
-        perror("Stats file failed to open.");
+        perror("Stats file failed to open");
+        puts("Closing.");
 	exit(1);
     }
     while((linecounter = fgetc(stats)) != EOF){
@@ -217,6 +216,7 @@ void write_stats(int *winlose, int *time_played, struct Lines lines)
 
     if(!stats){
         perror("Stats file failed to open.");
+        puts("Closing.");
 	exit(1);
     }
 
@@ -283,7 +283,9 @@ void read_file(char *word_buf, char *arg)
 
     FILE *word_list = fopen(filename, "r");
     if(!word_list){
-        perror("File failed to open.");
+        perror("File failed to open");
+        puts("Closing.");
+        exit(1);
         return;
     }
 
