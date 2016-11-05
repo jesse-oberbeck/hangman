@@ -4,15 +4,20 @@
 #include <unistd.h>
 #include <time.h>
 
+/*Defines size which allows for
+supercalifragilisticexpialidocious*/
 enum{
     MAX_WORD_SIZE = 36
 }; 
 
+/*Clears the buffer, just like it says.*/
 void clear_buffer(void)
 {
     while(getchar() != '\n');
 }
 
+/*Builds a stick man based on number of wrong
+answers.*/
 void print_man(int *wrongs)
 {
     const char *head = "  0\n";
@@ -42,11 +47,12 @@ void print_man(int *wrongs)
     }
 }
 
+/*Reads statistics in from file, or if file is not found,
+makes the file and fills it with base values.*/
 void read_stats(char *line1, char *line2, char *line3, char *line4)
 {
     char linecounter;
     int lines = 0;
-//////
     char filename[32];
     char *path = getenv("HOME");
     snprintf(filename, sizeof(filename), "%s/.hangman", path);
@@ -61,12 +67,14 @@ void read_stats(char *line1, char *line2, char *line3, char *line4)
             lines++;
         }
     }
-    printf("NUMBER OF LINES: %d\n", lines);
+
+    /*Prints values read in at the beginning
+    of program's run.*/
     fseek(stats, 0, SEEK_SET);
     if(lines > 2){
         fgets(line1, 32, stats);
         line1[strlen(line1) - 1] = '\0';
-	printf("BLARGENSNARGEL %s ", line1);
+	printf("%s ", line1);
 
         fgets(line2, 32, stats);
         line2[strlen(line2) - 1] = '\0';
@@ -80,6 +88,8 @@ void read_stats(char *line1, char *line2, char *line3, char *line4)
         line4[strlen(line4) - 1] = '\0';
 	printf("%s\n", line4);
 
+    /*Fills the stats file with default values
+    if it was just made.*/
     }else{
         fputs("0 Games\n", stats);
         fputs("0 Wins\n", stats);
@@ -89,11 +99,14 @@ void read_stats(char *line1, char *line2, char *line3, char *line4)
     fclose(stats);
 }
 
+/*Writes adjusted statistical values at the end
+of program's run.*/
 void write_stats(int *winlose, char *line1, char *line2, char *line3)
 {
     char filename[32];
     char *path = getenv("HOME");
 
+    //Builds "relative" path and reads file.
     snprintf(filename, sizeof(filename), "%s/.hangman", path);
     FILE *stats = fopen(filename, "w");
 
@@ -104,37 +117,36 @@ void write_stats(int *winlose, char *line1, char *line2, char *line3)
 
     fseek(stats, 0, SEEK_SET);
 
-    printf("WINLOSE: %d\n", *winlose);
-
-    printf("LINE 1: %s\n", line1);
+    //Adjust and print values to screen and file.
     long int num1 = strtol(line1, NULL, 10);
     num1++;
-    printf("!!!Games: %li\n", num1);
     fprintf(stats, "%li Games\n", num1);
+    printf("\nGames: %li\n", num1);
 
 
     long int num2 = strtol(line2, NULL, 10);
     if(*winlose == 1){
-        puts("WIN +1");
         num2++;
-        printf("!!!Wins: %li\n", num2);
     }
     fprintf(stats, "%li Wins\n", num2);
+    printf("Wins: %li\n", num2);
 
     long int num3 = strtol(line3, NULL, 10);
     if(*winlose == 0){
-        puts("LOSE +1");
         num3++;
-        printf("!!!Losses: %li\n", num3);
     }
+    printf("Losses: %li\n", num3);
     fprintf(stats, "%li Loss\n", num3);
 
     double num4 = (num2 - num3) / (double)num1;
     fprintf(stats, "%f Average\n", num4);
+    printf("%f Average\n", num4);
 
     fclose(stats);
 }
 
+/*Reads in answer list, setting the 
+goal word to a random word from the file.*/
 void read_file(char *word_buf)
 {
     srand(time(NULL) + clock());
@@ -174,11 +186,15 @@ void read_file(char *word_buf)
     fclose(word_list);
 }
 
+/*On each turn, prints correctly guessed letters, and
+lines where the letter has not yet been guessed.*/
 int print_puzzle(char *word_buf, char *all_guesses, int word_len)
 {
     int dash_count = 0;
     int printed = 0;
     int correct = 0;
+
+    //Handle letters.
     for(int i = 0; i < word_len; i++){
         for(int i2 = 0; all_guesses[i2] != '\0'; i2++){
             if(word_buf[i] == all_guesses[i2]){
@@ -188,8 +204,9 @@ int print_puzzle(char *word_buf, char *all_guesses, int word_len)
                 break;
             }
         }
+    //Handle lines/dashes.
         if(!printed){
-            printf("-");
+            printf("_");
             dash_count++;
             printed = 0;
         }
@@ -203,6 +220,7 @@ int print_puzzle(char *word_buf, char *all_guesses, int word_len)
     }
 }
 
+/*Assesses the number of incorrect guesses*/
 void count_wrong(char *word_buf, char *all_guesses, int word_len, int *wrongs)
 {
     int wrong = 0;
@@ -221,10 +239,11 @@ void count_wrong(char *word_buf, char *all_guesses, int word_len, int *wrongs)
     }
     int correct_guesses = strlen(all_guesses) - wrong;
     *wrongs = strlen(all_guesses) - correct_guesses;
-    printf("guesses: %s\n", all_guesses);
+    printf("\nguesses: %s\n", all_guesses);
 }
 
-////////////////////////////////////////
+/*Takes guess from player. Takes ONLY the
+first character from entry.*/
 void collect_input(char *user_guess, char *all_guesses)
 {
     puts("\n\nGuess a letter.");
