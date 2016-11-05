@@ -79,7 +79,7 @@ void clear_buffer(void)
 answers.*/
 void print_man(int *wrongs)
 {
-    const char *head = "  0\n";
+    const char *head = "  O\n";
     const char *body = "  |  \n";
     const char *onearm = " /|  \n";
     const char *twoarms = " /|\\ \n";
@@ -197,37 +197,37 @@ void write_stats(int *winlose, char *line1, char *line2, char *line3, int *time_
     long int num1 = strtol(line1, NULL, 10);
     num1++;
     fprintf(stats, "%li Games\n", num1);
-    printf("\nGames: %li\n", num1);
+    printf("\nTotal games: %li\n", num1);
 
     long int num2 = strtol(line2, NULL, 10);
     if(*winlose == 1){
         num2++;
     }
     fprintf(stats, "%li Wins\n", num2);
-    printf("Wins: %li\n", num2);
+    printf("Number of wins: %li\n", num2);
 
     long int num3 = strtol(line3, NULL, 10);
     if(*winlose == 0){
         num3++;
     }
-    printf("Losses: %li\n", num3);
+    printf("Number of losses: %li\n", num3);
     fprintf(stats, "%li Loss\n", num3);
 
     double num4 = (num2 - num3) / (double)num1;
-    fprintf(stats, "%f Average\n", num4);
-    printf("%f Average\n", num4);
+    fprintf(stats, "%f Average score\n", num4);
+    printf("Average score: %f\n", num4);
 
-    fprintf(stats, "%d seconds played previously.\n", *time_played);
-    printf("%d seconds played this game.\n", *time_played);
+    fprintf(stats, "%d Seconds played previously.\n", *time_played);
+    printf("Seconds played this game: %d\n", *time_played);
 
     double num5 = strtol(line6, NULL, 10);
     double total_time = (double)num5 + (double)(*time_played);
-    fprintf(stats, "%f total time played\n", total_time);
-    printf("%f total time played.\n", total_time);
+    fprintf(stats, "%f Total time played\n", total_time);
+    printf("Total time played: %f\n", total_time);
 
     double avg_time = (double)num5 / (double)num1;
-    fprintf(stats, "%f average time played\n", avg_time);
-    printf("%f average time played.\n", avg_time);
+    fprintf(stats, "%f Average time played\n", avg_time);
+    printf("Average time played: %f\n", avg_time);
 
 
     fclose(stats);
